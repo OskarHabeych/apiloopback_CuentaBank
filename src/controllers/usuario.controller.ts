@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {service} from '@loopback/core';
 import {
   Count,
@@ -9,15 +10,15 @@ import {
 } from '@loopback/repository';
 import {
   del, get,
-  getModelSchemaRef, param, patch, post, put, requestBody,
+  getModelSchemaRef, HttpErrors, param, patch, post, put, requestBody,
   response
 } from '@loopback/rest';
 import axios from 'axios';
-import {Usuario} from '../models';
+import {Credenciales, Usuario} from '../models';
 import {UsuarioRepository} from '../repositories';
 import {AuthService} from '../services';
 
-
+@authenticate("admin") // el controlador requiere que se este autenticado como administrador
 export class UsuarioController {
   constructor(
     @repository(UsuarioRepository)
@@ -25,7 +26,7 @@ export class UsuarioController {
     @service(AuthService)
     public servicioAuth: AuthService
   ) { }
-
+  @authenticate.skip()
   @post('/usuarios')
   @response(200, {
     description: 'Usuario model instance',
@@ -179,4 +180,37 @@ export class UsuarioController {
   async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.usuarioRepository.deleteById(id);
   }
+
+  //Servicio de login
+  @post('/login', { // "/login" es el nombre ser servicio web y se define por el método http "post"
+    responses: {
+      '200': { // tiene una respuesta que es el status "200" en la solicitud web que quiere decir que esta se hizo correctamente
+        description: 'Identificación de usuarios'
+      }
+    }
+  })
+
+  @authenticate.skip()
+  async login( // función login que posse un requestBody()
+    @requestBody() credenciales: Credenciales // el requestBody() es la info que entra desde la solicitud en la interface y espera un objeto de tipo "credenciales" que tiene un usuario y un password
+  ) {
+    let p = await this.servicioAuth.IdentificarPersona(credenciales.usuario, credenciales.password); // pasa un usuario y la contraseña en el método "IndentificaPersona" para identificar si la persona esta registrada en la BD
+    if (p) {
+      let token = this.servicioAuth.GenerarTokenJWT(p); // si la persona esta registrada en la BD se me gerena un token que va con un cuerpo
+
+      return {
+        status: "success",
+        data: {
+          nombre: p.nombres,
+          apellidos: p.apellidos,
+          correo: p.correo,
+          id: p.id
+        },
+        token: token // instrucción que me devuelve el token como tal si efectivamente la persona se encontró registrada en la BD
+      }
+    } else {
+      throw new HttpErrors[401]("Datos invalidos")  // en dado caso si la persona no existe en la BD se me muestra un error http (401) que quiere decir que la persona no esta autorizada
+    }
+  }
+
 }
