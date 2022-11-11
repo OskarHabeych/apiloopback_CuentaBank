@@ -43,8 +43,8 @@ export class AuthService {
 
   validarTokenJWT(token: string) {
     try {
-      let datos = jwt.verify(token, config.claveJWT);
-      return datos;
+      let datos = jwt.verify(token, config.claveJWT); //Verifica el token con respecto a la contraseña que se definió
+      return datos; //Retorna los datos legibles que se mostrarán en el localStorage en el explorador en la vista del usuario
     } catch (error) {
       return false;
     }

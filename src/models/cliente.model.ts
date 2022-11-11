@@ -22,6 +22,12 @@ export class Cliente extends Entity {
   apellidos: string;
 
   @property({
+    type: 'string',
+    required: true,
+  })
+  tipo_DocIdentidad: string;
+
+  @property({
     type: 'number',
     required: true,
   })
@@ -56,7 +62,6 @@ export class Cliente extends Entity {
     required: true,
   })
   estado: string;
-
 
   constructor(data?: Partial<Cliente>) {
     super(data);

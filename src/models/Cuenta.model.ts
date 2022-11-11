@@ -14,18 +14,6 @@ export class Cuenta extends Entity {
     type: 'string',
     required: true,
   })
-  tipo_DocIdentidad: string;
-
-  @property({
-    type: 'number',
-    required: true,
-  })
-  num_Identidad: number;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
   num_Cuenta: string;
 
   @property({
@@ -35,10 +23,10 @@ export class Cuenta extends Entity {
   tipo_Cuenta: string;
 
   @property({
-    type: 'boolean',
+    type: 'string',
     required: true,
   })
-  estado_Cuenta: boolean;
+  estado_Cuenta: string;
 
   @property({
     type: 'number',

@@ -182,6 +182,7 @@ export class UsuarioController {
   }
 
   //Servicio de login
+  @authenticate.skip()
   @post('/login', { // "/login" es el nombre ser servicio web y se define por el método http "post"
     responses: {
       '200': { // tiene una respuesta que es el status "200" en la solicitud web que quiere decir que esta se hizo correctamente
@@ -190,7 +191,6 @@ export class UsuarioController {
     }
   })
 
-  @authenticate.skip()
   async login( // función login que posse un requestBody()
     @requestBody() credenciales: Credenciales // el requestBody() es la info que entra desde la solicitud en la interface y espera un objeto de tipo "credenciales" que tiene un usuario y un password
   ) {
